@@ -20,10 +20,6 @@ type Service struct {
 	payments      []*types.Payment
 }
 
-type testService struct {
-	*Service
-}
-
 type testAccount struct {
 	phone    types.Phone
 	balance  types.Money
@@ -33,20 +29,7 @@ type testAccount struct {
 	}
 }
 
-func newTestService() *testService {
-	return &testService{Service: &Service{}}
-}
 
-var defaultTestAccount = testAccount{
-	phone:   "+992000000001",
-	balance: 1_000_00,
-	payments: []struct {
-		amount   types.Money
-		category types.PaymentCategory
-	}{
-		{amount: 500_00, category: "auto"},
-	},
-}
 
 func (s *Service) RegisterAccount(phone types.Phone) (*types.Account, error) {
 	for _, account := range s.accounts {

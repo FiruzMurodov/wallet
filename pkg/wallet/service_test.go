@@ -8,6 +8,26 @@ import (
 	"github.com/google/uuid"
 )
 
+var defaultTestAccount = testAccount{
+	phone:   "+992000000001",
+	balance: 1_000_00,
+	payments: []struct {
+		amount   types.Money
+		category types.PaymentCategory
+	}{
+		{amount: 500_00, category: "auto"},
+	},
+}
+
+type testService struct {
+	*Service
+}
+
+
+func newTestService() *testService {
+	return &testService{Service: &Service{}}
+}
+
 func TestService_FindAccountByID_success(t *testing.T) {
 	s := Service{}
 	s.RegisterAccount("000000001")
