@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"errors"
+
 	"github.com/FiruzMurodov/wallet/pkg/types"
 	"github.com/google/uuid"
 )
@@ -11,11 +12,13 @@ var ErrAmountMustBePositive = errors.New("amount must be greater than zero")
 var ErrAccountNotFound = errors.New("account not found")
 var ErrNotEnoughtBalance = errors.New("account not enought balance")
 var ErrPaymentNotFound = errors.New("payment not found")
+var ErrFavoriteNotFound = errors.New("Favorite not found")
 
 type Service struct {
 	nextAccountID int64
 	accounts      []*types.Account
 	payments      []*types.Payment
+	favorites 	  []*types.Favorite
 }
 
 
@@ -150,4 +153,69 @@ func (s *Service) Repeat(paymentID string) (*types.Payment,error)  {
 	}
 
 	return repeatPay,nil
+}
+
+func (s *Service) FavoritePayment(paymentID string, name string) (*types.Favorite,error)  {
+	
+	payment,err:= s.FindPaymentByID(paymentID)
+	if err != nil {
+		return nil,ErrPaymentNotFound
+	}
+
+	favorite:= &types.Favorite{
+		ID: paymentID,
+		AccountID: payment.AccountID,
+		Name: name,
+		Amount: payment.Amount,
+		Category: payment.Category,
+	}
+
+	s.favorites = append(s.favorites, favorite)
+
+	return favorite, nil
+}
+
+func (s *Service) PayFromFavotire(favoriteID string) (*types.Payment,error)  {
+	
+	
+	var favorite *types.Favorite
+	for _, fav := range s.favorites {
+		if fav.ID == favoriteID {
+			favorite = fav
+			break
+		}
+	}
+
+	if favorite == nil {
+		return nil, ErrFavoriteNotFound
+	}
+
+	if favorite.Amount <= 0 {
+		return nil, ErrAmountMustBePositive
+	}
+
+	account,_:=s.FindAccountByID(favorite.AccountID)
+
+	if account==nil {
+		return nil,ErrAccountNotFound
+	}
+
+	if account.Balance<=0 {
+		return nil,ErrAmountMustBePositive
+	}
+
+	
+	account.Balance -= favorite.Amount
+	paymentID := uuid.New().String()
+	payment := &types.Payment{
+		ID:        paymentID,
+		AccountID: favorite.AccountID,
+		Amount:    favorite.Amount,
+		Category:  favorite.Category,
+		Status:    types.PaymentStatusInProgress,
+	}
+	s.payments = append(s.payments, payment)
+	return payment, nil
+
+	
 }
