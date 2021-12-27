@@ -237,3 +237,68 @@ func TestService_Repeat_faild(t *testing.T) {
 	}
 
 }
+
+func TestService_FavoritePayment_success(t *testing.T)  {
+	s:=newTestService()
+
+	_, payments, err := s.addAcount(defaultTestAccount)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	payment:=payments[0]
+
+	_,err= s.FavoritePayment(payment.ID,"switch")
+
+	if err != nil {
+		t.Errorf("FavoritePayment(): \ngot - %v", err)
+		return
+	}
+
+}
+
+func TestService_FavoritePayment_faild(t *testing.T)  {
+	s:=newTestService()
+
+	_, _, err := s.addAcount(defaultTestAccount)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_,err= s.FavoritePayment("12","switch")
+
+	if err == nil {
+		t.Errorf("\n got - %v \n want - %v", err, ErrPaymentNotFound)
+		return
+	}
+
+}
+
+func TestService_PayFromFavorite_success(t *testing.T)  {
+	s:=newTestService()
+
+	_, payments, err := s.addAcount(defaultTestAccount)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	payment:=payments[0]
+
+	favorite,err:= s.FavoritePayment(payment.ID,"switch")
+
+	if err != nil {
+		t.Errorf("FavoritePayment(): \ngot - %v", err)
+		return
+	}
+
+	_,err= s.PayFromFavotire(favorite.ID)
+
+	if err != nil {
+		t.Errorf("FavoritePayment(): \ngot - %v", err)
+		return
+	}
+
+}
