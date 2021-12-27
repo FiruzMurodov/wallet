@@ -12,7 +12,7 @@ var ErrAmountMustBePositive = errors.New("amount must be greater than zero")
 var ErrAccountNotFound = errors.New("account not found")
 var ErrNotEnoughtBalance = errors.New("account not enought balance")
 var ErrPaymentNotFound = errors.New("payment not found")
-var ErrFavoriteNotFound = errors.New("Favorite not found")
+var ErrFavoriteNotFound = errors.New("favorite not found")
 
 type Service struct {
 	nextAccountID int64
@@ -162,8 +162,9 @@ func (s *Service) FavoritePayment(paymentID string, name string) (*types.Favorit
 		return nil,ErrPaymentNotFound
 	}
 
+	favoriteID:=uuid.New().String()
 	favorite:= &types.Favorite{
-		ID: paymentID,
+		ID: favoriteID,
 		AccountID: payment.AccountID,
 		Name: name,
 		Amount: payment.Amount,
@@ -175,16 +176,19 @@ func (s *Service) FavoritePayment(paymentID string, name string) (*types.Favorit
 	return favorite, nil
 }
 
+func (s *Service) FindFavoriteByID(favoriteID string) (*types.Favorite,error){
+ 
+	for _,i:=range s.favorites{
+	  if i.ID==favoriteID{
+		return i,nil
+	  }
+	}
+	 return nil,ErrFavoriteNotFound
+  }
+
 func (s *Service) PayFromFavotire(favoriteID string) (*types.Payment,error)  {
 	
-	
-	var favorite *types.Favorite
-	for _, fav := range s.favorites {
-		if fav.ID == favoriteID {
-			favorite = fav
-			break
-		}
-	}
+	favorite,_:=s.FindFavoriteByID(favoriteID)
 
 	if favorite == nil {
 		return nil, ErrFavoriteNotFound
@@ -194,28 +198,12 @@ func (s *Service) PayFromFavotire(favoriteID string) (*types.Payment,error)  {
 		return nil, ErrAmountMustBePositive
 	}
 
-	account,_:=s.FindAccountByID(favorite.AccountID)
+	payment,_:= s.Pay(favorite.AccountID,favorite.Amount,favorite.Category) 
 
-	if account==nil {
-		return nil,ErrAccountNotFound
-	}
-
-	if account.Balance<=0 {
-		return nil,ErrAmountMustBePositive
-	}
-
-	
-	account.Balance -= favorite.Amount
-	paymentID := uuid.New().String()
-	payment := &types.Payment{
-		ID:        paymentID,
-		AccountID: favorite.AccountID,
-		Amount:    favorite.Amount,
-		Category:  favorite.Category,
-		Status:    types.PaymentStatusInProgress,
-	}
-	s.payments = append(s.payments, payment)
-	return payment, nil
+	if payment==nil{
+		return nil,ErrFavoriteNotFound
+	  }
+	   return payment,nil
 
 	
 }
