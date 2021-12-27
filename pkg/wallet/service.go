@@ -2,8 +2,6 @@ package wallet
 
 import (
 	"errors"
-	"fmt"
-
 	"github.com/FiruzMurodov/wallet/pkg/types"
 	"github.com/google/uuid"
 )
@@ -19,16 +17,6 @@ type Service struct {
 	accounts      []*types.Account
 	payments      []*types.Payment
 }
-
-type testAccount struct {
-	phone    types.Phone
-	balance  types.Money
-	payments []struct {
-		amount   types.Money
-		category types.PaymentCategory
-	}
-}
-
 
 
 func (s *Service) RegisterAccount(phone types.Phone) (*types.Account, error) {
@@ -103,27 +91,7 @@ func (s *Service) Pay(accountID int64, amount types.Money, category types.Paymen
 	return payment, nil
 }
 
-func (s *Service) addAcount(data testAccount) (*types.Account, []*types.Payment, error) {
-	account, err := s.RegisterAccount(data.phone)
-	if err != nil {
-		return nil, nil, fmt.Errorf("can't register account, error = %v", err)
-	}
 
-	err = s.Deposit(account.ID, data.balance)
-	if err != nil {
-		return nil, nil, fmt.Errorf("can't deposity account, error = %v", err)
-	}
-
-	payments := make([]*types.Payment, len(data.payments))
-	for i, payment := range data.payments {
-		payments[i], err = s.Pay(account.ID, payment.amount, payment.category)
-		if err != nil {
-			return nil, nil, fmt.Errorf("can't make payment, error = %v", err)
-		}
-	}
-
-	return account, payments, nil
-}
 
 func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 
