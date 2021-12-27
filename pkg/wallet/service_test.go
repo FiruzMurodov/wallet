@@ -289,8 +289,7 @@ func TestService_PayFromFavorite_success(t *testing.T) {
 	favorite, err := s.FavoritePayment(payment.ID, "switch")
 
 	if err != nil {
-		t.Errorf("FavoritePayment(): \ngot - %v", err)
-		return
+		t.Errorf("FavoritePayment(): \ngot - %v", favorite)
 	}
 
 	pay_favorite, err := s.PayFromFavotire(favorite.ID)
