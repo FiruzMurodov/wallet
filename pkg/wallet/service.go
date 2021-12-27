@@ -184,7 +184,7 @@ func (s *Service) Reject(paymentID string) error {
 
 }
 
-func (s Service) Repeat(paymentID string) (*types.Payment,error)  {
+func (s *Service) Repeat(paymentID string) (*types.Payment,error)  {
 	
 	targetPayment,err:= s.FindPaymentByID(paymentID)
 
