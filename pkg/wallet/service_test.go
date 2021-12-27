@@ -1,9 +1,10 @@
 package wallet
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
-	"fmt"
+
 	"github.com/FiruzMurodov/wallet/pkg/types"
 	"github.com/google/uuid"
 )
@@ -31,7 +32,6 @@ var defaultTestAccount = testAccount{
 type testService struct {
 	*Service
 }
-
 
 func newTestService() *testService {
 	return &testService{Service: &Service{}}
@@ -228,7 +228,6 @@ func TestService_Repeat_faild(t *testing.T) {
 		return
 	}
 
-	
 	_, err = s.Repeat("12")
 
 	if err == nil {
@@ -238,8 +237,8 @@ func TestService_Repeat_faild(t *testing.T) {
 
 }
 
-func TestService_FavoritePayment_success(t *testing.T)  {
-	s:=newTestService()
+func TestService_FavoritePayment_success(t *testing.T) {
+	s := newTestService()
 
 	_, payments, err := s.addAcount(defaultTestAccount)
 	if err != nil {
@@ -247,9 +246,9 @@ func TestService_FavoritePayment_success(t *testing.T)  {
 		return
 	}
 
-	payment:=payments[0]
+	payment := payments[0]
 
-	_,err= s.FavoritePayment(payment.ID,"switch")
+	_, err = s.FavoritePayment(payment.ID, "switch")
 
 	if err != nil {
 		t.Errorf("FavoritePayment(): \ngot - %v", err)
@@ -258,8 +257,8 @@ func TestService_FavoritePayment_success(t *testing.T)  {
 
 }
 
-func TestService_FavoritePayment_faild(t *testing.T)  {
-	s:=newTestService()
+func TestService_FavoritePayment_faild(t *testing.T) {
+	s := newTestService()
 
 	_, _, err := s.addAcount(defaultTestAccount)
 	if err != nil {
@@ -267,7 +266,7 @@ func TestService_FavoritePayment_faild(t *testing.T)  {
 		return
 	}
 
-	_,err= s.FavoritePayment("12","switch")
+	_, err = s.FavoritePayment("12", "switch")
 
 	if err == nil {
 		t.Errorf("\n got - %v \n want - %v", err, ErrPaymentNotFound)
@@ -276,8 +275,8 @@ func TestService_FavoritePayment_faild(t *testing.T)  {
 
 }
 
-func TestService_PayFromFavorite_success(t *testing.T)  {
-	s:=newTestService()
+func TestService_PayFromFavorite_success(t *testing.T) {
+	s := newTestService()
 
 	_, payments, err := s.addAcount(defaultTestAccount)
 	if err != nil {
@@ -285,20 +284,20 @@ func TestService_PayFromFavorite_success(t *testing.T)  {
 		return
 	}
 
-	payment:=payments[0]
+	payment := payments[0]
 
-	favorite,err:= s.FavoritePayment(payment.ID,"switch")
+	favorite, err := s.FavoritePayment(payment.ID, "switch")
 
 	if err != nil {
 		t.Errorf("FavoritePayment(): \ngot - %v", err)
 		return
 	}
 
-	_,err= s.PayFromFavotire(favorite.ID)
+	pay_favorite, err := s.PayFromFavotire(favorite.ID)
 
 	if err != nil {
-		t.Errorf("FavoritePayment(): \ngot - %v", err)
-		return
+		t.Errorf("method PayFromFavorite returned not nil error, payfromtFavorite => %v", pay_favorite)
+
 	}
 
 }
