@@ -292,6 +292,18 @@ func TestService_PayFromFavorite_success(t *testing.T) {
 		t.Errorf("FavoritePayment(): \ngot - %v", favorite)
 	}
 
+	if favorite.AccountID!= payment.AccountID {
+		t.Errorf("FavoritePayment(): \ngot - %v", ErrAccountNotFound)
+	}
+
+	if favorite.Amount!= payment.Amount {
+		t.Errorf("FavoritePayment(): \ngot - %v", ErrPaymentNotFound)
+	}
+
+	if favorite.Category!= payment.Category {
+		t.Errorf("FavoritePayment(): \ngot - %v", ErrPaymentNotFound)
+	}
+	
 	pay_favorite, err := s.PayFromFavotire(favorite.ID)
 
 	if err != nil {
