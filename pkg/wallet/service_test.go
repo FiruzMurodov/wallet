@@ -304,7 +304,7 @@ func TestService_PayFromFavorite_success(t *testing.T) {
 		t.Errorf("FavoritePayment(): \ngot - %v", ErrPaymentNotFound)
 	}
 	
-	pay_favorite, err := s.PayFromFavotire(favorite.ID)
+	pay_favorite, err := s.PayFromFavorite(favorite.ID)
 
 	if err != nil {
 		t.Errorf("method PayFromFavorite returned not nil error, payfromtFavorite => %v", pay_favorite)
