@@ -157,7 +157,7 @@ func (s *Service) Repeat(paymentID string) (*types.Payment,error)  {
 
 func (s *Service) FavoritePayment(paymentID string, name string) (*types.Favorite,error)  {
 	
-	payment,err:= s.FindPaymentByID(paymentID)
+	payment,err:= s.FindFavoriteByID(paymentID)
 	if err != nil {
 		return nil,ErrPaymentNotFound
 	}
